@@ -4,7 +4,7 @@ import { FormularioComponent } from './formulario/formulario.component';
 
 export const routes: Routes = [
   { path: 'confirmacion', component: ConfirmacionComponent },
-  { path: '', redirectTo: '1', pathMatch: 'full' },
+  { path: '', redirectTo: 'cadete', pathMatch: 'full' },
   { path: ':id', component: FormularioComponent }
 
 ];

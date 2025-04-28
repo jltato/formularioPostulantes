@@ -56,28 +56,34 @@ private route = inject(ActivatedRoute);
 private formDataService = inject(FormDataService)
 private edadMaxima = 24;
 verificando = false;
-tipoInscripcionId:string = "1";
+tipoInscripcionId: number = 0;
 enviando:boolean = false;
 formData: any;
 
 
 ngOnInit(): void {
-  this.tipoInscripcionId = this.route.snapshot.paramMap.get('id') ?? "1";
-  if (this.tipoInscripcionId=="1"){
-    this.edadMaxima=24
-  }
-  else if (this.tipoInscripcionId =="2"){
-    this.edadMaxima=34
-  }
-  else{
-    this.edadMaxima=99
-  }
+  let PropertyRoute = this.route.snapshot.paramMap.get('id') ?? "cadete";
+  this.tipoInscripcionId = this.tipoInscripcion(PropertyRoute);
 
   this.formDataService.getFormData().subscribe(data => {
     this.formData = data;
     console.log(this.formData);
   });
 }
+
+tipoInscripcion(tipo: string): number {
+  switch (tipo.toLowerCase()) {
+    case 'cadete':
+      return 1;
+    case 'suboficial':
+      return 2;
+    case 'profesional':
+      return 3;
+    default:
+      return 1;
+  }
+}
+
 
 ObservacionesGroup = this._formBuilder.group({
   observaciones:[''],
@@ -229,7 +235,6 @@ crearFamiliaresFormGroup(): FormGroup {
 }
 
 
-
 @ViewChild('stepper') stepper!: MatStepper;
 
 verificarYContinuar(): void {
@@ -240,7 +245,7 @@ verificarYContinuar(): void {
 
   this.verificando = true;
 
-  const tipoId = parseInt(this.tipoInscripcionId);
+  const tipoId = this.tipoInscripcionId;
   const dniControl = this.InicialFormGroup.get('dni');
   const emailControl = this.InicialFormGroup.get('mail');
   const dniString = this.InicialFormGroup.get('dni')?.value ?? "";
@@ -270,7 +275,6 @@ verificarYContinuar(): void {
     error: err => console.error('Error al verificar', err)
   });
 }
-
 
 getErrorMessage(formGroup: FormGroup, controlName: string): string {
   const control = formGroup.get(controlName);
@@ -381,7 +385,7 @@ EnviarFormulario() {
       trabajos: this.trabajosFormArray?.value ?? [],
       seguimiento:{
         EstadoId:1,
-        TipoInscripcionId: parseInt(this.tipoInscripcionId),
+        TipoInscripcionId: this.tipoInscripcionId,
         Modify_At: new Date(),
       }
     };
@@ -429,7 +433,6 @@ EnviarFormulario() {
     this.TrabajoFormGroup.markAsTouched();
     this.FamiliarFormGroup.markAsTouched();
     this.ObservacionesGroup.markAsTouched();
-
   }
 };
 
