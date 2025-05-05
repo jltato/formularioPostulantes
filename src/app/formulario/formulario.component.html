@@ -1,101 +1,166 @@
 
 
 <h1 class="mb-2 text-center">Bienvenidos, {{ title }}</h1>
-<div class="container container-fluid d-lg-flex">
+<div class="container container-fluid d-lg-flex flex-row-reverse">
+  <div class="right-side col-lg ">
+    <h3 class="fw-bold fs-3 text-dark mt-2 mb-5 text-center">Incluir Foto Carnet</h3>
+
+    <input type="file" class="d-none" accept=".jpg,.jpeg,.png"
+    (change)="onFileSelected($event)" #fileUpload>
+
+      <div class="d-flex flex-column gap-2 text-center">
+
+        <div *ngIf="fileBase64 != ''" class="d-flex justify-content-center align-items-center" style="height:400px;" >
+
+            <img [src]="fileUrl" alt="preview" style="max-width:100%; max-height:100%">
+
+        </div>
+
+        {{fileName || "No se ha seleccionado ningun archivo."}}
+
+        <button mat-mini-fab class="btn btn-primary d-flex m-auto p-2 rounded-5"
+          (click)="fileUpload.click()">
+            <mat-icon >attach_file</mat-icon>
+        </button>
+      </div>
+
+    <div class="social-links justify-content-center d-flex">
+      <a
+        href="https://www.facebook.com/minjusytrabcba"
+        aria-label="facebook"
+        target="_blank"
+        rel="noopener"
+
+      >
+      <mat-icon color="secondary"  fontIcon="facebook"></mat-icon>
+      </a>
+      <a
+        href="https://serviciopenitenciariodecordoba.com.ar"
+        aria-label="Twitter"
+        target="_blank"
+        rel="noopener"
+      >
+       <mat-icon fontIcon="home"> </mat-icon>
+      </a>
+      <a
+        href="https://serviciopenitenciariodecordoba.com.ar/web/contacto/"
+        aria-label="Youtube"
+        target="_blank"
+        rel="noopener"
+      >
+       <mat-icon fontIcon="mail"></mat-icon>
+      </a>
+    </div>
+  </div>
+
+  <div class="divider mt-5" role="separator" aria-label="Divider"></div>
 
   <div class="left-side col-lg-8">
     <h3 class="fw-bold fs-3 text-dark my-2">Completar el Formulario de Inscripción</h3>
     <mat-stepper orientation="vertical" [linear]="true" #stepper>
+
       <mat-step [stepControl]="InicialFormGroup">
         <form [formGroup]="InicialFormGroup" class="d-flex flex-column gap-2 ">
           <ng-template matStepLabel>Inicio</ng-template>
-        <div class=" border p-3 mb-2">
-          <div class="d-xl-flex gap-2">
-            <mat-form-field class="w-100">
-              <mat-label>Nombres</mat-label>
-              <input matInput formControlName="nombre" required appUppercase>
-              <mat-error *ngIf="InicialFormGroup.get('nombre')?.invalid">
-                {{ getErrorMessage(InicialFormGroup, 'nombre') }}
-              </mat-error>
-            </mat-form-field>
+          <div class=" border p-3 mb-2">
 
-            <mat-form-field class="w-75">
-              <mat-label>Apellido</mat-label>
-              <input matInput formControlName="apellido" required appUppercase>
-              <mat-error *ngIf="InicialFormGroup.get('apellido')?.invalid">
-                {{ getErrorMessage(InicialFormGroup, 'apellido') }}
-              </mat-error>
-            </mat-form-field>
-          </div>
-          <div class="d-xl-flex gap-2">
-            <mat-form-field class="w-100">
-              <mat-label>E-mail</mat-label>
-              <input matInput formControlName="mail" required appUppercase>
-              <mat-error *ngIf="InicialFormGroup.get('mail')?.invalid">
-                {{ getErrorMessage(InicialFormGroup, 'mail') }}
-              </mat-error>
-            </mat-form-field>
+            <div class="row g-2">
+              <mat-form-field class="col-xl-7">
+                <mat-label>Nombres</mat-label>
+                <input matInput formControlName="nombre" required appUppercase>
+                <mat-error *ngIf="InicialFormGroup.get('nombre')?.invalid">
+                  {{ getErrorMessage(InicialFormGroup, 'nombre') }}
+                </mat-error>
+              </mat-form-field>
+              <mat-form-field class="col-xl-5">
+                <mat-label>Apellido</mat-label>
+                <input matInput formControlName="apellido" required appUppercase>
+                <mat-error *ngIf="InicialFormGroup.get('apellido')?.invalid">
+                  {{ getErrorMessage(InicialFormGroup, 'apellido') }}
+                </mat-error>
+              </mat-form-field>
+            </div>
 
-            <mat-form-field class=" w-50">
-              <mat-label>Fecha de Nacimiento</mat-label>
-              <input matInput  type="date" formControlName="fechaNac"  >
-              <mat-error *ngIf="InicialFormGroup.get('fechaNac')?.invalid">
-                {{ getErrorMessage(InicialFormGroup, 'fechaNac') }}
-              </mat-error>
-            </mat-form-field>
-          </div>
-          <div class="d-xl-flex gap-2 ">
-            <mat-form-field class="w-100">
-              <mat-label>Dni</mat-label>
-              <input matInput
-              formControlName="dni"
-              mask="00.000.000"
-              placeholder="___.___.___"
-              required
-              >
-              <mat-error *ngIf="InicialFormGroup.get('dni')?.invalid">
-                {{ getErrorMessage(InicialFormGroup, 'dni') }}
-              </mat-error>
-            </mat-form-field>
+            <div class="row g-2">
+              <mat-form-field class="col-xl-7">
+                <mat-label>E-mail</mat-label>
+                <input matInput formControlName="mail" required appUppercase>
+                <mat-error *ngIf="InicialFormGroup.get('mail')?.invalid">
+                  {{ getErrorMessage(InicialFormGroup, 'mail') }}
+                </mat-error>
+              </mat-form-field>
 
-            <mat-form-field class=" w-75">
-              <mat-label>Sexo</mat-label>
-              <mat-select formControlName="sexoId">
-                <mat-option *ngFor="let sexo of formData?.sexos" [value]="sexo.sexoId">
-                  {{ sexo.sexoName }}
-                </mat-option>
-              </mat-select>
-              <mat-error *ngIf="InicialFormGroup.get('sexoId')?.invalid">
-                {{ getErrorMessage(InicialFormGroup, 'sexoId') }}
-              </mat-error>
-            </mat-form-field>
-          </div>
-          <div class="d-xl-flex gap-2 ">
-            @if(tipoInscripcionId != 1){
-              <mat-form-field class=" w-100">
-                <mat-label>Establecimiento a Prestar Servicio</mat-label>
-                <mat-select formControlName="estabSolicitudId">
-                  <mat-option *ngFor="let establecimiento of formData?.establecimientos" [value]="establecimiento.establecimientoId">
-                    {{ establecimiento.establecimientoNombre + ' - ' + establecimiento.establecimientoCiudad }}
+              <mat-form-field class="col-xl-5">
+                <mat-label>Fecha de Nacimiento</mat-label>
+                <input matInput
+                      [matDatepicker]="picker"
+                      formControlName="fechaNac"
+                      [max]="maxFechaNacimiento"
+                      [readonly]="true"
+                      placeholder="Selecciona tu fecha de nacimiento"
+                      (click)="picker.open()">
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker startView="multi-year"></mat-datepicker>
+
+
+                <mat-error *ngIf="InicialFormGroup.get('fechaNac')?.invalid">
+                  {{ getErrorMessage(InicialFormGroup, 'fechaNac') }}
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <div class="row g-2">
+              <mat-form-field class="col-xl">
+                <mat-label>Dni</mat-label>
+                <input matInput
+                formControlName="dni"
+                mask="00.000.000"
+                placeholder="___.___.___"
+                required
+                inputmode="numeric"
+                >
+                <mat-error *ngIf="InicialFormGroup.get('dni')?.invalid">
+                  {{ getErrorMessage(InicialFormGroup, 'dni') }}
+                </mat-error>
+              </mat-form-field>
+              <mat-form-field class="col-xl">
+                <mat-label>Sexo</mat-label>
+                <mat-select formControlName="sexoId">
+                  <mat-option *ngFor="let sexo of formData?.sexos" [value]="sexo.sexoId">
+                    {{ sexo.sexoName }}
                   </mat-option>
                 </mat-select>
-
+                <mat-error *ngIf="InicialFormGroup.get('sexoId')?.invalid">
+                  {{ getErrorMessage(InicialFormGroup, 'sexoId') }}
+                </mat-error>
               </mat-form-field>
-            }
+            </div>
 
-            <mat-form-field class=" w-100">
-              <mat-label>Nacionalidad</mat-label>
-              <mat-select formControlName="nacionalidadId">
-                <mat-option *ngFor="let nac of formData?.nacionalidades" [value]="nac.nacionalidadId">
-                  {{ nac.nombreNacionalidad}}
-                </mat-option>
-              </mat-select>
-              <mat-error *ngIf="InicialFormGroup.get('nacionalidadId')?.invalid">
-                {{ getErrorMessage(InicialFormGroup, 'nacionalidadId') }}
-              </mat-error>
-            </mat-form-field>
+            <div class="row g-2">
+              @if(tipoInscripcionId != 1){
+                <mat-form-field class="col-xl">
+                  <mat-label>Establecimiento a Prestar Servicio</mat-label>
+                  <mat-select formControlName="estabSolicitudId">
+                    <mat-option *ngFor="let establecimiento of formData?.establecimientos" [value]="establecimiento.establecimientoId">
+                      {{ establecimiento.establecimientoNombre + ' - ' + establecimiento.establecimientoCiudad }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              }
+              <mat-form-field class="col-xl">
+                <mat-label>Nacionalidad</mat-label>
+                <mat-select formControlName="nacionalidadId">
+                  <mat-option *ngFor="let nac of formData?.nacionalidades" [value]="nac.nacionalidadId">
+                    {{ nac.nombreNacionalidad}}
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="InicialFormGroup.get('nacionalidadId')?.invalid">
+                  {{ getErrorMessage(InicialFormGroup, 'nacionalidadId') }}
+                </mat-error>
+              </mat-form-field>
+            </div>
+
           </div>
-        </div>
           <div>
             <button mat-button (click)="verificarYContinuar()" [disabled]="verificando">
               <mat-progress-spinner
@@ -113,19 +178,23 @@
       <mat-step [stepControl]="ContactosFormGroup">
         <form [formGroup]="ContactosFormGroup" class="d-flex flex-column gap-2">
           <ng-template matStepLabel>Contacto</ng-template>
+          <P> *Puede incluir todos los telefonos de contacto que desee.</P>
           <div formArrayName="contactos">
             <div *ngFor="let contacto of contactosFormArray.controls; let i = index" [formGroupName]="i" class=" border p-3 mb-2">
-              <div class="d-xl-flex gap-2">
-                <mat-form-field class="w-100">
+              <div class="row g-2">
+                <mat-form-field class="col-xl-5">
                   <mat-label>Teléfono</mat-label>
-                  <input matInput formControlName="telefono" appUppercase>
+                  <input matInput formControlName="telefono"
+                  appUppercase
+                  type="tel"
+                  inputmode="numeric">
                   <mat-error *ngIf="contacto.get('telefono')?.invalid">
                     {{ getErrorMessage(ContactosFormGroup, 'telefono') }}
                   </mat-error>
                 </mat-form-field>
-                <mat-form-field class="w-50">
+                <mat-form-field class="col-xl-7">
                   <mat-label>Perteneciente a:</mat-label>
-                  <input matInput formControlName="perteneciente" appUppercase>
+                  <input matInput formControlName="perteneciente" placeholder="Personal, Padre, Madre, vecino, etc." appUppercase>
                   <mat-error *ngIf="contacto.get('perteneciente')?.invalid">
                     {{ getErrorMessage(ContactosFormGroup, 'perteneciente') }}
                   </mat-error>
@@ -150,8 +219,8 @@
         <form [formGroup]="PersonalFormGroup" class="d-flex flex-column gap-2">
           <ng-template matStepLabel>Datos Personales</ng-template>
           <div class=" border p-3 mb-2">
-          <div class="d-xl-flex gap-2">
-            <mat-form-field class="w-100">
+          <div class="row g-2">
+            <mat-form-field class="col-xl">
               <mat-label>Altura</mat-label>
               <input
                 matInput
@@ -159,25 +228,27 @@
                 mask="000"
                 suffix=" cm."
                 placeholder="00"
+                inputmode="numeric"
                 >
               <mat-error *ngIf="InicialFormGroup.get('altura')?.invalid">
                 {{ getErrorMessage(InicialFormGroup, 'altura') }}
               </mat-error>
             </mat-form-field>
-
-            <mat-form-field class="w-100">
+            <mat-form-field class="col-xl">
               <mat-label>Peso</mat-label>
               <input matInput
               formControlName="peso"
               mask="00*"
-              suffix=" kg.">
+              suffix=" kg."
+              inputmode="numeric">
               <mat-error *ngIf="InicialFormGroup.get('peso')?.invalid">
                 {{ getErrorMessage(InicialFormGroup, 'peso') }}
               </mat-error>
             </mat-form-field>
           </div>
-          <div class="d-xl-flex gap-2">
-            <mat-form-field class=" w-100">
+
+          <div class="row g-2">
+            <mat-form-field class="col-xl">
               <mat-label>Genero</mat-label>
               <mat-select formControlName="generoId">
                 <mat-option *ngFor="let genero of formData?.generos" [value]="genero.generoId">
@@ -188,7 +259,7 @@
                 {{ getErrorMessage(PersonalFormGroup, 'generoId') }}
               </mat-error>
             </mat-form-field>
-            <mat-form-field class=" w-100">
+            <mat-form-field class="col-xl">
               <mat-label>Estado Civil</mat-label>
               <mat-select formControlName="estadoCivilId">
                 <mat-option *ngFor="let est of formData?.estadosCiviles" [value]="est.estadoCivilId">
@@ -200,15 +271,18 @@
               </mat-error>
             </mat-form-field>
           </div>
-          <div class="d-xl-flex justify-content-between">
-            <mat-checkbox  #chkTatuajes  formControlName="tieneTatuajes" class="align-self-center">
-              ¿Tiene Tatuajes?
-            </mat-checkbox>
 
-            <div *ngIf="chkTatuajes.checked">
-              <mat-form-field >
+          <div class="row g-2">
+            <div class="col-xl">
+              <mat-checkbox  #chkTatuajes  formControlName="tieneTatuajes" class="align-self-center">
+                ¿Tiene Tatuajes?
+              </mat-checkbox>
+            </div>
+
+            <div *ngIf="chkTatuajes.checked" class="col-xl">
+              <mat-form-field class="w-100">
                 <mat-label>¿Cuántos?</mat-label>
-                <input matInput formControlName="cantidadTatuajes" type="number">
+                <input matInput formControlName="cantidadTatuajes" type="text" inputmode="numeric">
               </mat-form-field>
             </div>
           </div>
@@ -224,24 +298,24 @@
         <form [formGroup]="DomicilioFormGroup" class="d-flex flex-column gap-2">
           <ng-template matStepLabel>Domicilio</ng-template>
           <div class=" border p-3 mb-2">
-          <div class="d-xl-flex gap-2">
-            <mat-form-field class="w-100">
+          <div class="row g-2">
+            <mat-form-field class="col-xl-8">
               <mat-label>Calle</mat-label>
               <input matInput formControlName="calle" appUppercase>
               <mat-error *ngIf="DomicilioFormGroup.get('calle')?.invalid">
                 {{ getErrorMessage(DomicilioFormGroup, 'calle') }}
               </mat-error>
             </mat-form-field>
-            <mat-form-field class="w-25">
+            <mat-form-field class="col-xl-4">
               <mat-label>Numero</mat-label>
-              <input matInput formControlName="numero"  placeholder="0000">
+              <input matInput formControlName="numero"  placeholder="0000" type="text" inputmode="numeric">
               <mat-error *ngIf="DomicilioFormGroup.get('numero')?.invalid">
                 {{ getErrorMessage(DomicilioFormGroup, 'numero') }}
               </mat-error>
             </mat-form-field>
           </div>
-          <div class="d-xl-flex gap-2">
-            <mat-form-field class="w-100">
+          <div class="row g-2">
+            <mat-form-field class="col-xl-8">
               <mat-label>Localidad</mat-label>
               <mat-select formControlName="localidadId">
                 <mat-option *ngFor="let localidad of formData?.localidades" [value]="localidad.localidadId">
@@ -252,9 +326,9 @@
                 {{ getErrorMessage(DomicilioFormGroup, 'localidadId') }}
               </mat-error>
             </mat-form-field>
-            <mat-form-field class="w-25">
+            <mat-form-field class="col-xl-4">
               <mat-label>Código Postal</mat-label>
-              <input matInput formControlName="codigoPostal" mask="0000" placeholder="0000">
+              <input matInput formControlName="codigoPostal" mask="0000" placeholder="0000" inputmode="numeric">
               <mat-error *ngIf="DomicilioFormGroup.get('codigoPostal')?.invalid">
                 {{ getErrorMessage(DomicilioFormGroup, 'codigoPostal') }}
               </mat-error>
@@ -274,8 +348,8 @@
           <div formArrayName="estudios">
             <div *ngFor="let estudio of estudiosFormArray.controls; let i = index" [formGroupName]="i" class=" border p-3 mb-2">
 
-              <div class="d-xl-flex gap-2">
-                <mat-form-field class="w-100">
+              <div class="row g-2">
+                <mat-form-field class="col-xl">
                   <mat-label>Nivel de Estudios</mat-label>
                   <mat-select formControlName="nivelEstudiosId">
                     <mat-option *ngFor="let nivel of formData?.nivelEstudios" [value]="nivel.nivelEstudiosId">
@@ -286,8 +360,7 @@
                     {{ getErrorMessage(EstudiosFormGroup, 'nivelEstudiosId') }}
                   </mat-error>
                 </mat-form-field>
-
-                <mat-form-field class="w-100">
+                <mat-form-field class="col-xl">
                   <mat-label>Título</mat-label>
                   <input matInput formControlName="titulo" appUppercase>
                   <mat-error *ngIf="estudio.get('titulo')?.invalid">
@@ -296,18 +369,17 @@
                 </mat-form-field>
               </div>
 
-              <div class="d-xl-flex gap-2">
-                <mat-form-field class="w-100">
+              <div class="row g-2">
+                <mat-form-field class="col-xl-8">
                   <mat-label>Instituto Educativo</mat-label>
                   <input matInput formControlName="institutoEducativo" appUppercase>
                   <mat-error *ngIf="estudio.get('institutoEducativo')?.invalid">
                     {{ getErrorMessage(EstudiosFormGroup, 'institutoEducativo') }}
                   </mat-error>
                 </mat-form-field>
-
-                <mat-form-field class="w-50">
+                <mat-form-field class="col-xl-4">
                   <mat-label>Año de Egreso</mat-label>
-                  <input matInput formControlName="anoEgreso" mask="0000" placeholder="0000">
+                  <input matInput formControlName="anoEgreso" mask="0000" placeholder="0000" inputmode="numeric">
                   <mat-error *ngIf="estudio.get('anoEgreso')?.invalid">
                     {{ getErrorMessage(EstudiosFormGroup, 'anoEgreso') }}
                   </mat-error>
@@ -315,7 +387,7 @@
               </div>
 
               <div>
-                <mat-checkbox formControlName="enCurso"> Sin Finalizar </mat-checkbox>
+                <mat-checkbox formControlName="enCurso"> Cursando </mat-checkbox>
               </div>
 
               <button mat-button color="warn" (click)="eliminarEstudio(i)" *ngIf="estudiosFormArray.length > 1">
@@ -339,32 +411,37 @@
           <ng-template matStepLabel>Trabajo</ng-template>
           <div formArrayName="trabajos">
             <div *ngFor="let trabajo of trabajosFormArray.controls; let i = index" [formGroupName]="i" class=" border p-3 mb-2">
-              <div class="d-xl-flex gap-2">
-                <mat-form-field class="w-100">
+              <div class="row g-2">
+                <mat-form-field class="col-xl-8">
                   <mat-label>Actividad Laboral</mat-label>
                   <input matInput formControlName="actividadLaboral" appUppercase>
                   <mat-error *ngIf="trabajo.get('actividadLaboral')?.invalid">
                     {{ getErrorMessage(TrabajoFormGroup, 'actividadLaboral') }}
                   </mat-error>
                 </mat-form-field>
-                <mat-form-field class="w-25">
+                <mat-form-field class="col-xl-4">
                   <mat-label>Cantidad de años</mat-label>
-                  <input matInput formControlName="antiguedad" mask="0*" >
+                  <input matInput formControlName="antiguedad" mask="0*" inputmode="numeric">
                   <mat-error *ngIf="trabajo.get('antiguedad')?.invalid">
                     {{ getErrorMessage(TrabajoFormGroup, 'antiguedad') }}
                   </mat-error>
                 </mat-form-field>
               </div>
-              <div class="d-xl-flex justify-content-between gap-2">
-                <mat-checkbox  #chkFuerza  formControlName="otraFuerza" class="align-self-center">
-                  Fuerza de Seguridad
-                </mat-checkbox>
-                <div *ngIf="chkFuerza.checked" class="w-75">
+              <div class="row g-2">
+                <div class="col-xl-4">
+                  <mat-checkbox  #chkFuerza  formControlName="otraFuerza" class="align-self-center">
+                    Fuerza de Seguridad
+                  </mat-checkbox>
+                </div>
+                <div *ngIf="chkFuerza.checked" class="col-xl-8">
                   <mat-form-field class="w-100">
                     <mat-label>¿Motivo de Baja?</mat-label>
                     <input matInput formControlName="motivoBaja" appUppercase>
                   </mat-form-field>
                 </div>
+              </div>
+              <div>
+                <mat-checkbox #chkTrabActual > Trabajo Actual </mat-checkbox>
               </div>
               <button mat-button color="warn" (click)="eliminarTrabajo(i)" *ngIf="trabajosFormArray.length > 1">Eliminar</button>
             </div>
@@ -385,15 +462,15 @@
           <p class="p-2 my-2">* Debe agregar a todos los familiares directos (Padre, Madre, hnos, hijos, conyuge, etc.)</p>
           <div formArrayName="familiares">
             <div *ngFor="let familiar of familiarFormArray.controls; let i = index" [formGroupName]="i" class=" border p-3 mb-2">
-              <div class="d-xl-flex gap-2">
-                <mat-form-field class="w-100">
+              <div class="row g-2">
+                <mat-form-field class="col-xl-8">
                   <mat-label>Nombres</mat-label>
                   <input matInput formControlName="nombre" appUppercase>
                   <mat-error *ngIf="familiar.get('nombre')?.invalid">
                     {{ getErrorMessage(FamiliarFormGroup, 'nombre') }}
                   </mat-error>
                 </mat-form-field>
-                <mat-form-field class="w-75">
+                <mat-form-field class="col-xl-4">
                   <mat-label>Apellido</mat-label>
                   <input matInput formControlName="apellido" appUppercase>
                   <mat-error *ngIf="familiar.get('apellido')?.invalid">
@@ -402,20 +479,21 @@
                 </mat-form-field>
               </div>
 
-              <div class="d-xl-flex gap-2 ">
-                <mat-form-field class="w-100">
+              <div class="row g-2 ">
+                <mat-form-field class="col-xl">
                   <mat-label>Dni</mat-label>
                   <input matInput
                   formControlName="dni"
                   mask="00.000.000"
                   placeholder="___.___.___"
+                  inputmode="numeric"
                   required
                   >
                   <mat-error *ngIf="FamiliarFormGroup.get('dni')?.invalid">
                     {{ getErrorMessage(FamiliarFormGroup, 'dni') }}
                   </mat-error>
                 </mat-form-field>
-                <mat-form-field class=" w-75">
+                <mat-form-field class=" col-xl">
                   <mat-label>Parentesco</mat-label>
                   <mat-select formControlName="parentescoId">
                     <mat-option *ngFor="let parentesco of formData?.parentescos" [value]="parentesco.parentescoId">
@@ -457,9 +535,10 @@
       <mat-step [stepControl]="ObservacionesGroup">
         <form [formGroup]="FamiliarFormGroup" class="d-flex flex-column gap-2">
           <ng-template matStepLabel>Observaciones</ng-template>
+          <p>*Puede agregar informacion relevante que no este contemplada en este formulario</p>
           <mat-form-field>
             <mat-label>Observaciones</mat-label>
-            <textarea matInput [rows]="4" placeholder="Observaciones..."></textarea>
+            <textarea matInput [rows]="4" placeholder="Opcional..."></textarea>
           </mat-form-field>
 
         <div>
@@ -471,71 +550,28 @@
 
       <mat-step>
         <ng-template matStepLabel>Finalizar</ng-template>
-        <p class="mt-4 p-3 border rounded bg-light text-muted text-center mb-2"> <small>
+        <p class="bg-danger-subtle border mb-2 mt-4 p-3 rounded text-center text-danger mb-xl-2"> <small>
           El presente formulario tiene carácter de declaración jurada.<br>
-          Antes de enviarlo verifique que no ha omitido ningún dato y que los mismos sean correctos.
+          Antes de enviar verifique que no ha omitido ningún dato y que los mismos sean correctos.
         </small></p>
 
         <p *ngIf="imagenRequerida" class="text-danger">*Debe seleccionar una foto antes de enviar el formulario.</p>
 
-        <div>
+        <div *ngIf="!enviando">
           <button mat-button [disabled]="enviando"  matStepperPrevious>Volver</button>
-          <button mat-button [disabled]="enviando"  (click)="EnviarFormulario()">Enviar</button>
-          <button mat-button [disabled]="enviando"  (click)="stepper.reset()" class="float-end">Limpiar</button>
+          <button mat-button [disabled]="enviando" (click)="reloadPage()" >Limpiar</button>
+          <button mat-button [disabled]="enviando"  (click)="EnviarFormulario()" class="float-end">Enviar</button>
+        </div>
+        <div *ngIf="enviando" class="d-flex justify-content-center">
+          <mat-progress-spinner
+              mode="indeterminate"
+              diameter="20"
+              color="accent">
+          </mat-progress-spinner>
         </div>
       </mat-step>
 
     </mat-stepper>
   </div>
-  <div class="divider mt-5" role="separator" aria-label="Divider"></div>
-  <div class="right-side col-lg ">
-    <h3 class="fw-bold fs-3 text-dark mt-2 mb-5 text-center">Incluir Foto Carnet</h3>
 
-    <input type="file" class="d-none" accept=".jpg,.jpeg,.png"
-    (change)="onFileSelected($event)" #fileUpload>
-
-      <div class="d-flex flex-column gap-2 text-center">
-
-      <div class="d-flex justify-content-center align-items-center" style="height:400px;" >
-
-          <img *ngIf="fileBase64 != ''" [src]="fileUrl" alt="preview" style="max-width:100%; max-height:100%">
-
-      </div>
-
-        {{fileName || "No se ha seleccionado ningun archivo."}}
-
-        <button mat-mini-fab class="btn btn-primary d-flex m-auto p-2 rounded-5"
-          (click)="fileUpload.click()">
-            <mat-icon >attach_file</mat-icon>
-        </button>
-      </div>
-
-    <div class="social-links justify-content-center d-flex">
-      <a
-        href="https://www.facebook.com/minjusytrabcba"
-        aria-label="facebook"
-        target="_blank"
-        rel="noopener"
-
-      >
-      <mat-icon color="secondary"  fontIcon="facebook"></mat-icon>
-      </a>
-      <a
-        href="https://serviciopenitenciariodecordoba.com.ar"
-        aria-label="Twitter"
-        target="_blank"
-        rel="noopener"
-      >
-       <mat-icon fontIcon="home"> </mat-icon>
-      </a>
-      <a
-        href="https://serviciopenitenciariodecordoba.com.ar/web/contacto/"
-        aria-label="Youtube"
-        target="_blank"
-        rel="noopener"
-      >
-       <mat-icon fontIcon="mail"></mat-icon>
-      </a>
-    </div>
-  </div>
 </div>

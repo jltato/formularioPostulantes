@@ -6,7 +6,7 @@ import {MatSelect} from '@angular/material/select';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatInputModule } from '@angular/material/input';
-import { MatOption } from '@angular/material/core';
+import { MatOption, MatNativeDateModule } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatStepper, MatStepperModule } from '@angular/material/stepper';
 import { PostulantesService } from '../services/postulantes.service';
@@ -17,6 +17,7 @@ import { FormDataService } from '../services/form-data.service';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { MatIcon } from '@angular/material/icon';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 
 @Component({
   selector: 'formulario',
@@ -36,6 +37,8 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
     MatProgressSpinnerModule,
     MatCheckbox,
     MatIcon,
+    MatNativeDateModule,
+    MatDatepickerModule,
 
   ],
   standalone: true,
@@ -59,7 +62,7 @@ verificando = false;
 tipoInscripcionId: number = 0;
 enviando:boolean = false;
 formData: any;
-
+maxFechaNacimiento: Date = new Date();
 
 ngOnInit(): void {
   let PropertyRoute = this.route.snapshot.paramMap.get('id') ?? "cadete";
@@ -69,15 +72,21 @@ ngOnInit(): void {
     this.formData = data;
     console.log(this.formData);
   });
+
+  const hoy = new Date();
+  this.maxFechaNacimiento = new Date(hoy.getFullYear() - 18, hoy.getMonth(), hoy.getDate());
 }
 
 tipoInscripcion(tipo: string): number {
   switch (tipo.toLowerCase()) {
     case 'cadete':
+      this.edadMaxima=24;
       return 1;
     case 'suboficial':
+      this.edadMaxima=34;
       return 2;
     case 'profesional':
+      this.edadMaxima=99;
       return 3;
     default:
       return 1;
@@ -366,14 +375,19 @@ EnviarFormulario() {
     this.imagenRequerida = true;
     return;
   }
+
   this.imagenRequerida = false;
 
   if (this.InicialFormGroup.valid && this.DomicilioFormGroup.valid) {
     this.enviando = true;
 
+this.InicialFormGroup.value.fechaSolicitud = new Date();
+const fechaRaw = this.InicialFormGroup.value.fechaNac;
+const fechaFormateada = fechaRaw ? new Date(fechaRaw).toISOString().split('T')[0] : null;
 
     const payload = {
       ...this.InicialFormGroup.value,
+      fechaNac: fechaFormateada,
       datosPersonales: {
         ...this.PersonalFormGroup.value,
         observaciones: this.ObservacionesGroup.value.observaciones
@@ -435,6 +449,10 @@ EnviarFormulario() {
     this.ObservacionesGroup.markAsTouched();
   }
 };
+
+reloadPage(): void {
+  window.location.reload();
+}
 
 
 }
