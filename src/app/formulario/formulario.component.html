@@ -149,7 +149,7 @@
               }
               <mat-form-field class="col-xl">
                 <mat-label>Nacionalidad</mat-label>
-                <mat-select formControlName="nacionalidadId">
+                <mat-select #nacionalidad="matSelect" formControlName="nacionalidadId">
                   <mat-option *ngFor="let nac of formData?.nacionalidades" [value]="nac.nacionalidadId">
                     {{ nac.nombreNacionalidad}}
                   </mat-option>
@@ -159,7 +159,12 @@
                 </mat-error>
               </mat-form-field>
             </div>
-
+            <div class="row g-2">
+              <mat-checkbox *ngIf="nacionalidad.value > 1" formControlName="nacionalizado" required>Nacionalizado Argentino</mat-checkbox>
+              <mat-error *ngIf="InicialFormGroup.get('nacionalizado')?.invalid">
+                Debe ser Argentino o estar Nacionalizado para ingresar al Servicio Penitenciario
+              </mat-error>
+            </div>
           </div>
           <div>
             <button mat-button (click)="verificarYContinuar()" [disabled]="verificando">
@@ -420,30 +425,36 @@
                   </mat-error>
                 </mat-form-field>
                 <mat-form-field class="col-xl-4">
-                  <mat-label>Cantidad de años</mat-label>
-                  <input matInput formControlName="antiguedad" mask="0*" inputmode="numeric">
-                  <mat-error *ngIf="trabajo.get('antiguedad')?.invalid">
-                    {{ getErrorMessage(TrabajoFormGroup, 'antiguedad') }}
+                  <mat-label>Desde Hasta</mat-label>
+                  <mat-date-range-input [rangePicker]="picker2" >
+                    <input matStartDate formControlName="desde" placeholder="Desde">
+                    <input matEndDate formControlName="hasta" placeholder="Hasta">
+                  </mat-date-range-input>
+                  <mat-hint>DD/MM/AAAA – DD/MM/AAAA</mat-hint>
+                  <mat-datepicker-toggle matIconSuffix [for]="picker2"></mat-datepicker-toggle>
+                  <mat-date-range-picker #picker2></mat-date-range-picker>
+                  <mat-error *ngIf="trabajo.get('desde')?.invalid">
+                    {{ getErrorMessage(TrabajoFormGroup, 'desde') }}
                   </mat-error>
                 </mat-form-field>
               </div>
               <div class="row g-2">
                 <div class="col-xl-4">
-                  <mat-checkbox  #chkFuerza  formControlName="otraFuerza" class="align-self-center">
-                    Fuerza de Seguridad
-                  </mat-checkbox>
+                    <mat-checkbox  #chkFuerza  formControlName="otraFuerza" class="align-self-center">
+                      Fuerza de Seguridad
+                    </mat-checkbox>
                 </div>
                 <div *ngIf="chkFuerza.checked" class="col-xl-8">
-                  <mat-form-field class="w-100">
-                    <mat-label>¿Motivo de Baja?</mat-label>
-                    <input matInput formControlName="motivoBaja" appUppercase>
-                  </mat-form-field>
+                    <mat-form-field class="w-100">
+                      <mat-label>¿Motivo de Baja?</mat-label>
+                      <input matInput formControlName="motivoBaja" appUppercase>
+                    </mat-form-field>
+                  </div>
                 </div>
-              </div>
-              <div>
-                <mat-checkbox #chkTrabActual > Trabajo Actual </mat-checkbox>
-              </div>
-              <button mat-button color="warn" (click)="eliminarTrabajo(i)" *ngIf="trabajosFormArray.length > 1">Eliminar</button>
+                <div>
+                  <mat-checkbox #chkTrabActual > Trabajo Actual </mat-checkbox>
+                </div>
+                <button mat-button color="warn" (click)="eliminarTrabajo(i)" *ngIf="trabajosFormArray.length > 1">Eliminar</button>
             </div>
             <div class="align-items-end">
               <button mat-button color="primary" (click)="agregarTrabajo()">Agregar Actividad Laboral</button>

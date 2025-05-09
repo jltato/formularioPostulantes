@@ -19,6 +19,7 @@ import { MatIcon } from '@angular/material/icon';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 
+
 @Component({
   selector: 'formulario',
   imports: [
@@ -75,6 +76,25 @@ ngOnInit(): void {
 
   const hoy = new Date();
   this.maxFechaNacimiento = new Date(hoy.getFullYear() - 18, hoy.getMonth(), hoy.getDate());
+
+
+  this.InicialFormGroup.get('nacionalidadId')?.valueChanges.subscribe(nacionalidadId => {
+
+    const numerNacionalidad = parseInt(nacionalidadId ?? "1");
+
+    const checkboxCtrl = this.InicialFormGroup.get('nacionalizado');
+    if (!checkboxCtrl) return;
+
+    if (numerNacionalidad !== 1) {
+      checkboxCtrl.setValidators([Validators.requiredTrue]);
+    } else {
+      checkboxCtrl.clearValidators();
+      checkboxCtrl.setValue(false);
+    }
+    checkboxCtrl.updateValueAndValidity();
+  });
+
+
 }
 
 tipoInscripcion(tipo: string): number {
@@ -108,7 +128,11 @@ InicialFormGroup = this._formBuilder.group({
   dni: ['', Validators.required],
   nacionalidadId:['', Validators.required],
   fechaSolicitud: [new Date()],
+  nacionalizado: [false]
 });
+
+
+
 
 PersonalFormGroup = this._formBuilder.group({
   generoId:['', Validators.required],
@@ -205,7 +229,8 @@ eliminarTrabajo(index: number) {
 crearTrabajoFormGroup(): FormGroup {
   return this._formBuilder.group({
     actividadLaboral: [''],
-    antiguedad: [Number],
+    desde: [''],
+    hasta:[''],
     intentoAnterior: [false],
     etapaAlcanzada: [''],
     otraFuerza: [false],
@@ -247,6 +272,9 @@ crearFamiliaresFormGroup(): FormGroup {
 @ViewChild('stepper') stepper!: MatStepper;
 
 verificarYContinuar(): void {
+
+
+
   if (this.InicialFormGroup.invalid) {
     this.InicialFormGroup.markAllAsTouched();
     return;
@@ -381,13 +409,14 @@ EnviarFormulario() {
   if (this.InicialFormGroup.valid && this.DomicilioFormGroup.valid) {
     this.enviando = true;
 
-this.InicialFormGroup.value.fechaSolicitud = new Date();
-const fechaRaw = this.InicialFormGroup.value.fechaNac;
-const fechaFormateada = fechaRaw ? new Date(fechaRaw).toISOString().split('T')[0] : null;
+// this.InicialFormGroup.value.fechaSolicitud = new Date();
+// const fechaRaw = this.InicialFormGroup.value.fechaNac;
+// const fechaFormateada = fechaRaw ? new Date(fechaRaw).toISOString().split('T')[0] : null;
 
     const payload = {
       ...this.InicialFormGroup.value,
-      fechaNac: fechaFormateada,
+      fechaNac: this.formatDateOnly(new Date(this.InicialFormGroup.value.fechaNac ?? "")),
+      fechaSolicitud: new Date(),
       datosPersonales: {
         ...this.PersonalFormGroup.value,
         observaciones: this.ObservacionesGroup.value.observaciones
@@ -396,7 +425,11 @@ const fechaFormateada = fechaRaw ? new Date(fechaRaw).toISOString().split('T')[0
       contactos: this.contactosFormArray?.value ?? [],
       familiares: this.familiarFormArray?.value ?? [],
       estudios: this.estudiosFormArray?.value ?? [],
-      trabajos: this.trabajosFormArray?.value ?? [],
+      trabajos: this.trabajosFormArray?.value.map((trabajo: any) => ({
+        ...trabajo,
+        desde: trabajo.desde ? this.formatDateOnly(trabajo.desde) : null,
+        hasta: trabajo.hasta ? this.formatDateOnly(trabajo.hasta) : null
+      })),
       seguimiento:{
         EstadoId:1,
         TipoInscripcionId: this.tipoInscripcionId,
@@ -453,6 +486,11 @@ const fechaFormateada = fechaRaw ? new Date(fechaRaw).toISOString().split('T')[0
 reloadPage(): void {
   window.location.reload();
 }
+
+formatDateOnly(date: Date): string {
+  return date ? date.toISOString().split('T')[0] : '';
+}
+
 
 
 }
