@@ -18,6 +18,12 @@ import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { MatIcon } from '@angular/material/icon';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatMomentDateModule, MAT_MOMENT_DATE_FORMATS } from '@angular/material-moment-adapter';
+import { MAT_DATE_FORMATS} from '@angular/material/core';
+import { MY_FORMATS } from '../../configs/date-formats';
+import * as moment from 'moment';
+import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter } from '@angular/material-moment-adapter';
+import { DateAdapter, MAT_DATE_LOCALE } from '@angular/material/core';
 
 
 @Component({
@@ -45,13 +51,20 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
   standalone: true,
   templateUrl: './formulario.component.html',
   styleUrls: ['./formulario.component.css'],
-  providers: [provideNgxMask()],
+  providers: [provideNgxMask(),
+
+    { provide: MAT_DATE_FORMATS, useValue: MY_FORMATS },
+    { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE, MAT_MOMENT_DATE_ADAPTER_OPTIONS] },
+    { provide: MAT_DATE_LOCALE, useValue: 'es-AR' } // o 'es-ES'
+  ],
 })
 
 
 export class FormularioComponent implements OnInit {
 
-  constructor(private sanitizer: DomSanitizer) {}
+  constructor(private sanitizer: DomSanitizer, private adapter: DateAdapter<any>) {
+    this.adapter.setLocale('es');
+  }
 
 private _formBuilder = inject(FormBuilder);
 private postulanteService = inject(PostulantesService);
@@ -332,7 +345,7 @@ getErrorMessage(formGroup: FormGroup, controlName: string): string {
     return 'La edad no puede ser mayor a ' + this.edadMaxima + ' años';
   }
   if (control?.hasError('edadMinima') ){
-    return 'La edad no puede ser menor de 18 años';
+    return 'Debe cumplir 18 antes de 01/04/'+  (new Date().getFullYear() + 1).toString();
   }
   return '';
 }
@@ -354,12 +367,15 @@ edadMinimaValidator(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
     const fecha = new Date(control.value);
     const hoy = new Date();
-    const edad = hoy.getFullYear() - fecha.getFullYear();
-    const mes = hoy.getMonth() - fecha.getMonth();
-    const dia = hoy.getDate() - fecha.getDate();
+
+    const fechaCalculo = new Date(hoy.getFullYear() + 1, 3, 1);
+
+    const edad = fechaCalculo.getFullYear() - fecha.getFullYear();
+    const mes = fechaCalculo.getMonth() - fecha.getMonth();
+    const dia = fechaCalculo.getDate() - fecha.getDate();
     const edadExacta = mes < 0 || (mes === 0 && dia < 0) ? edad - 1 : edad;
 
-    return edadExacta < 18 ? { edadMinima: true } : null;
+    return edadExacta < 19 ? { edadMinima: true } : null;
   };
 }
 
@@ -434,7 +450,12 @@ EnviarFormulario() {
         EstadoId:1,
         TipoInscripcionId: this.tipoInscripcionId,
         Modify_At: new Date(),
-      }
+        EstadosSeguimiento:[{
+          EtapaSeguimientoId:1,
+          FechaTurno:new Date()
+        }]
+      },
+
     };
 
     this.postulanteService.enviarDatos(payload)
